@@ -45,16 +45,48 @@ h1 {
   background-color: #7c3aed;
   padding: 1rem;
   text-align: center;
+  color: white;
 }
 
 .box-header h2 {
-  color: white;
   margin: 0;
   font-weight: 500;
   font-size: 1.2rem;
 }
 
-.item {
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.filter-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.filter-btn.active {
+  background: white;
+  color: #7c3aed;
+}
+
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.task-list {
+  padding: 0;
+  margin: 0;
+}
+
+.task {
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -62,15 +94,15 @@ h1 {
   transition: background-color 0.2s;
 }
 
-.item:hover {
+.task:hover {
   background-color: #f9fafb;
 }
 
-.item:last-child {
+.task:last-child {
   border-bottom: none;
 }
 
-input[type="checkbox"] {
+.task-checkbox {
   appearance: none;
   width: 20px;
   height: 20px;
@@ -81,7 +113,7 @@ input[type="checkbox"] {
   transition: all 0.2s;
 }
 
-input[type="checkbox"]:checked {
+.task-checkbox:checked {
   background-color: #7c3aed;
   border-color: #7c3aed;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
@@ -89,7 +121,7 @@ input[type="checkbox"]:checked {
   background-position: center;
 }
 
-.item-title {
+.task-text {
   flex: 1;
   font-size: 1rem;
   color: #111827;
@@ -98,22 +130,27 @@ input[type="checkbox"]:checked {
   word-break: break-word;
 }
 
-.item.completed .item-title {
+.task.completed .task-text {
   color: #9ca3af;
   text-decoration: line-through;
 }
 
-.edit-btn {
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.task-btn {
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
-  margin-left: 0.5rem;
   color: #6b7280;
   transition: color 0.2s;
 }
 
-.edit-btn:hover {
+.task-btn:hover {
   color: #7c3aed;
 }
 
@@ -178,8 +215,19 @@ input[type="checkbox"]:checked {
   background-color: #6d28d9;
 }
 
+.error-message {
+  color: #ef4444;
+  text-align: center;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  min-height: 1rem;
+}
+
 .icon {
   display: block;
+  width: 16px;
+  height: 16px;
 }
 
 footer {
