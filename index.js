@@ -79,4 +79,29 @@ function renderTasks(filter = 'all') {
   });
 }
 
+function saveTasks(){
+    localStorage.getItem('tasks', JSON.stringify(tasks))
+}
 
+
+function getCurrentFilter() {
+  const activeFilter = document.querySelector('.filter-btn.active');
+  return activeFilter ? activeFilter.dataset.filter : 'all';
+}
+
+function addTasks(text){
+    if(!text.trim()){
+        showError("Task cannont be empty");
+        return
+    }
+    const newTask = {
+        id : Date.now(),
+        text,
+        completed:false
+    }
+    tasks.push(newTask);
+    saveTasks();
+    renderTasks(getCurrentFilter());
+    taskInput.value = '';
+    hideError();
+}
