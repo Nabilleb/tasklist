@@ -1,30 +1,41 @@
-const taskList = document.getElementById('taskList');
-const addForm = document.getElementById('addForm');
-const taskInput = document.getElementById('taskInput');
-const errorMessage = document.getElementById('errorMessage');
-const filterButtons = document.querySelectorAll('.filter-btn');
+// DOM Element References
+const taskList = document.getElementById('taskList'); // Container for task items
+const addForm = document.getElementById('addForm'); // Form for adding new tasks
+const taskInput = document.getElementById('taskInput'); // Input field for new tasks
+const errorMessage = document.getElementById('errorMessage'); // Element for error messages
+const filterButtons = document.querySelectorAll('.filter-btn'); // Filter buttons (All/Completed/Pending)
 
+// Initialize tasks array from localStorage or empty array if none exists
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-console.log(tasks)
-function renderTasks(filter = 'all') {
-  taskList.innerHTML = '';
+console.log(localStorage); // Debug: Check localStorage contents
 
+/**
+ * Renders tasks based on the current filter
+ * @param {string} filter - Filter type: 'all', 'completed', or 'pending'
+ */
+function renderTasks(filter = 'all') {
+  taskList.innerHTML = ''; // Clear current task list
+
+  // Filter tasks based on the selected filter
   const filteredTasks = tasks.filter(task => {
     if (filter === 'completed') return task.completed;
     if (filter === 'pending') return !task.completed;
-    return true;
+    return true; // 'all' filter - return all tasks
   });
 
+  // Show message if no tasks found
   if (filteredTasks.length === 0) {
     taskList.innerHTML = '<p class="no-tasks">No tasks found</p>';
     return;
   }
 
+  // Create and append each task element
   filteredTasks.forEach((task, index) => {
     const taskElement = document.createElement('div');
     taskElement.className = `task ${task.completed ? 'completed' : ''}`;
     taskElement.dataset.id = task.id;
-
+    
+    // Task HTML template
     taskElement.innerHTML = `
       <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
       <p class="task-text">${task.text}</p>
@@ -54,6 +65,7 @@ function renderTasks(filter = 'all') {
 
     taskList.appendChild(taskElement);
 
+    // Get references to task elements
     const checkbox = taskElement.querySelector('.task-checkbox');
     const editBtn = taskElement.querySelector('.edit-btn');
     const deleteBtn = taskElement.querySelector('.delete-btn');
@@ -61,6 +73,7 @@ function renderTasks(filter = 'all') {
     const editInput = taskElement.querySelector('.edit-input');
     const saveBtn = taskElement.querySelector('.save-btn');
 
+    // Add event listeners
     checkbox.addEventListener('change', () => toggleTaskComplete(task.id));
     editBtn.addEventListener('click', () => showEditForm(taskElement));
     deleteBtn.addEventListener('click', () => deleteTask(task.id));
@@ -71,15 +84,19 @@ function renderTasks(filter = 'all') {
   });
 }
 
-// Add new task
+/**
+ * Adds a new task to the list
+ * @param {string} text - The task description
+ */
 function addTask(text) {
   if (!text.trim()) {
     showError('Task cannot be empty');
     return;
   }
 
+  // Create new task object
   const newTask = {
-    id: Date.now(),
+    id: Date.now(), // Unique ID based on timestamp
     text,
     completed: false
   };
@@ -87,17 +104,22 @@ function addTask(text) {
   tasks.push(newTask);
   saveTasks();
   renderTasks(getCurrentFilter());
-  taskInput.value = '';
+  taskInput.value = ''; // Clear input field
   hideError();
 }
 
-// Update task text
+/**
+ * Updates an existing task's text
+ * @param {number} id - Task ID to update
+ * @param {string} newText - New task description
+ */
 function updateTask(id, newText) {
   if (!newText.trim()) {
     showError('Task cannot be empty');
     return;
   }
 
+  // Update task text in the tasks array
   tasks = tasks.map(task => 
     task.id === id ? { ...task, text: newText } : task
   );
@@ -107,6 +129,10 @@ function updateTask(id, newText) {
   hideError();
 }
 
+/**
+ * Toggles a task's completed status
+ * @param {number} id - Task ID to toggle
+ */
 function toggleTaskComplete(id) {
   tasks = tasks.map(task => 
     task.id === id ? { ...task, completed: !task.completed } : task
@@ -116,13 +142,20 @@ function toggleTaskComplete(id) {
   renderTasks(getCurrentFilter());
 }
 
-// Delete task
+/**
+ * Deletes a task from the list
+ * @param {number} id - Task ID to delete
+ */
 function deleteTask(id) {
   tasks = tasks.filter(task => task.id !== id);
   saveTasks();
   renderTasks(getCurrentFilter());
 }
 
+/**
+ * Shows the edit form for a task
+ * @param {HTMLElement} taskElement - The task DOM element
+ */
 function showEditForm(taskElement) {
   const taskText = taskElement.querySelector('.task-text');
   const editForm = taskElement.querySelector('.edit-form');
@@ -130,37 +163,57 @@ function showEditForm(taskElement) {
   const editBtn = taskElement.querySelector('.edit-btn');
   const deleteBtn = taskElement.querySelector('.delete-btn');
 
+  // Hide normal view, show edit form
   taskText.style.display = 'none';
   editForm.style.display = 'flex';
   editBtn.style.display = 'none';
   deleteBtn.style.display = 'none';
 
+  // Focus and select text in input
   editInput.focus();
   editInput.select();
 }
 
+/**
+ * Saves tasks to localStorage
+ */
 function saveTasks() {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
+/**
+ * Shows an error message
+ * @param {string} message - Error message to display
+ */
 function showError(message) {
   errorMessage.textContent = message;
 }
 
+/**
+ * Hides the error message
+ */
 function hideError() {
   errorMessage.textContent = '';
 }
 
+/**
+ * Gets the currently active filter
+ * @returns {string} The current filter ('all', 'completed', or 'pending')
+ */
 function getCurrentFilter() {
   const activeFilter = document.querySelector('.filter-btn.active');
   return activeFilter ? activeFilter.dataset.filter : 'all';
 }
 
+// Event Listeners
+
+// Add new task form submission
 addForm.addEventListener('submit', (e) => {
   e.preventDefault();
   addTask(taskInput.value);
 });
 
+// Filter button click handlers
 filterButtons.forEach(button => {
   button.addEventListener('click', () => {
     filterButtons.forEach(btn => btn.classList.remove('active'));
@@ -169,4 +222,5 @@ filterButtons.forEach(button => {
   });
 });
 
+// Initial render
 renderTasks();
