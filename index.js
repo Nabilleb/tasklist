@@ -105,3 +105,18 @@ function addTasks(text){
     taskInput.value = '';
     hideError();
 }
+
+function updateTask(id, newTask){
+    if(!newTask.trim()){
+        showError("Task cannot be empty");
+        return;
+    }
+      tasks = tasks.map(task => 
+    task.id === id ? { ...task, text: newText } : task
+  );
+
+  saveTasks();
+  renderTasks(getCurrentFilter());
+  hideError();
+
+}
