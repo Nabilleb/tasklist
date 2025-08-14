@@ -1,19 +1,11 @@
 const taskList = document.getElementById('taskList');
-const addForm = document.getElementById("addForm");
-const taskInput = document.getElementById("taskInput");
-const errorMessage = document.getElementById("errorMessage");
+const addForm = document.getElementById('addForm');
+const taskInput = document.getElementById('taskInput');
+const errorMessage = document.getElementById('errorMessage');
 const filterButtons = document.querySelectorAll('.filter-btn');
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-
-function showError(message){
-    errorMessage.textContent = message;
-}
-
-function hideError(){
-    errorMessage.textContent = '';
-}
-
+console.log(tasks)
 function renderTasks(filter = 'all') {
   taskList.innerHTML = '';
 
@@ -79,47 +71,42 @@ function renderTasks(filter = 'all') {
   });
 }
 
-function saveTasks(){
-    localStorage.getItem('tasks', JSON.stringify(tasks))
+// Add new task
+function addTask(text) {
+  if (!text.trim()) {
+    showError('Task cannot be empty');
+    return;
+  }
+
+  const newTask = {
+    id: Date.now(),
+    text,
+    completed: false
+  };
+
+  tasks.push(newTask);
+  saveTasks();
+  renderTasks(getCurrentFilter());
+  taskInput.value = '';
+  hideError();
 }
 
+// Update task text
+function updateTask(id, newText) {
+  if (!newText.trim()) {
+    showError('Task cannot be empty');
+    return;
+  }
 
-function getCurrentFilter() {
-  const activeFilter = document.querySelector('.filter-btn.active');
-  return activeFilter ? activeFilter.dataset.filter : 'all';
-}
-
-function addTasks(text){
-    if(!text.trim()){
-        showError("Task cannont be empty");
-        return
-    }
-    const newTask = {
-        id : Date.now(),
-        text,
-        completed:false
-    }
-    tasks.push(newTask);
-    saveTasks();
-    renderTasks(getCurrentFilter());
-    taskInput.value = '';
-    hideError();
-}
-
-function updateTask(id, newTask){
-    if(!newTask.trim()){
-        showError("Task cannot be empty");
-        return;
-    }
-      tasks = tasks.map(task => 
+  tasks = tasks.map(task => 
     task.id === id ? { ...task, text: newText } : task
   );
 
   saveTasks();
   renderTasks(getCurrentFilter());
   hideError();
-
 }
+
 function toggleTaskComplete(id) {
   tasks = tasks.map(task => 
     task.id === id ? { ...task, completed: !task.completed } : task
@@ -129,10 +116,57 @@ function toggleTaskComplete(id) {
   renderTasks(getCurrentFilter());
 }
 
+// Delete task
 function deleteTask(id) {
   tasks = tasks.filter(task => task.id !== id);
   saveTasks();
   renderTasks(getCurrentFilter());
 }
+
+function showEditForm(taskElement) {
+  const taskText = taskElement.querySelector('.task-text');
+  const editForm = taskElement.querySelector('.edit-form');
+  const editInput = taskElement.querySelector('.edit-input');
+  const editBtn = taskElement.querySelector('.edit-btn');
+  const deleteBtn = taskElement.querySelector('.delete-btn');
+
+  taskText.style.display = 'none';
+  editForm.style.display = 'flex';
+  editBtn.style.display = 'none';
+  deleteBtn.style.display = 'none';
+
+  editInput.focus();
+  editInput.select();
+}
+
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function showError(message) {
+  errorMessage.textContent = message;
+}
+
+function hideError() {
+  errorMessage.textContent = '';
+}
+
+function getCurrentFilter() {
+  const activeFilter = document.querySelector('.filter-btn.active');
+  return activeFilter ? activeFilter.dataset.filter : 'all';
+}
+
+addForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  addTask(taskInput.value);
+});
+
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    renderTasks(button.dataset.filter);
+  });
+});
 
 renderTasks();
