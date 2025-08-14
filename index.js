@@ -120,3 +120,19 @@ function updateTask(id, newTask){
   hideError();
 
 }
+function toggleTaskComplete(id) {
+  tasks = tasks.map(task => 
+    task.id === id ? { ...task, completed: !task.completed } : task
+  );
+
+  saveTasks();
+  renderTasks(getCurrentFilter());
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(task => task.id !== id);
+  saveTasks();
+  renderTasks(getCurrentFilter());
+}
+
+renderTasks();
